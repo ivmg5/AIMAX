@@ -33,7 +33,7 @@ npx auth secret
 
 The current version of the project uses a local psql database, so DATABASE_URL would look something like `"postgresql://user_name:password@localhost:5432/db_name"`, if you haven't made a local version of the database you use the following code to initialize everything. Make sure to be logged in into the user postgres
 
-### Databse
+### Database
 
 ```psql
 CREATE DATABASE aimax;
