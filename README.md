@@ -1,41 +1,68 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+AIMAX: Personalized Learning Platform
 
-## Setting up
+Introduction
 
-### Install project dependencies
+AIMAX is an innovative personalized learning platform designed to adapt to each user’s needs and preferences. By leveraging artificial intelligence, AIMAX generates highly personalized learning recommendations, ensuring that users receive content relevant and tailored to their individual goals.
 
-```bash
+Whether you’re a student or a professional, AIMAX bridges the gap between the vast availability of information and effective personalization, facilitating efficient and effective learning for everyone.
+
+Features
+
+	•	Personalized Recommendations: AI-driven suggestions based on your academic background, interests, and learning history.
+	•	Dynamic Learning Roadmaps: Customized learning paths that evolve with your changing interests and goals.
+	•	Progress Tracking: Visualize your learning progress with dynamic progress bars and milestone tracking.
+	•	Profile Management: Update your profile information, interests, and skills as you grow.
+	•	Access to Learning Resources: Detailed descriptions and links to relevant resources for each topic in your roadmap.
+	•	Multi-device Support: Accessible and functional across desktops, tablets, and smartphones.
+
+Getting Started
+
+These instructions will help you set up the project on your local machine for development and testing purposes.
+
+Prerequisites
+
+	•	Node.js (v14.x or later)
+	•	npm (v6.x or later)
+	•	PostgreSQL (v12.x or later)
+	•	Git
+
+Installation
+
+	1.	Clone the Repository
+
+git clone https://github.com/ivmg5/AIMAX.git
+cd AIMAX
+
+
+	2.	Install Project Dependencies
+
 npm install
-```
 
-The file .env and .env.local will need to be setup with the corresponding data
 
-### .env
+	3.	Set Up Environment Variables
+Create a .env file in the root directory and add the following:
 
-```txt
-DATABASE_URL=
-```
+DATABASE_URL=postgresql://username:password@localhost:5432/aimax
 
-### .env.local
+Create a .env.local file and add the following:
 
-```txt
-AUTH_SECRET=
-AUTH_GITHUB_ID=
-AUTH_GITHUB_SECRET=
+AUTH_SECRET=your_auth_secret
+AUTH_GITHUB_ID=your_github_client_id
+AUTH_GITHUB_SECRET=your_github_client_secret
+OPENAI_API_KEY=your_openai_api_key
 NODE_ENV=development
-```
 
-Auth secret can be obtained through
+	•	AUTH_SECRET: Generate using:
 
-```bash
-npx auth secret
-```
+npx authjs generate-secret
 
-The current version of the project uses a local psql database, so DATABASE_URL would look something like `"postgresql://user_name:password@localhost:5432/db_name"`, if you haven't made a local version of the database you use the following code to initialize everything. Make sure to be logged in into the user postgres
 
-### Database
+	•	DATABASE_URL: Replace username, password, and aimax with your PostgreSQL credentials and desired database name.
+	•	OPENAI_API_KEY: Obtain an API key from OpenAI.
 
-```psql
+	4.	Set Up the Database
+Log in to PostgreSQL and create the database and user:
+
 CREATE DATABASE aimax;
 CREATE USER aimax WITH PASSWORD 'your_password';
 GRANT ALL PRIVILEGES ON DATABASE aimax TO aimax;
@@ -44,48 +71,55 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO aimax;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO aimax;
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO aimax;
 ALTER USER aimax WITH CREATEDB;
-```
 
-### Updating the schema
 
-Once you have an available database and have the secrets set up you can migrate the schema onto the db with prisma, this will need to be done each time the schema changes
+	5.	Migrate the Database Schema
 
-```bash
 npx prisma migrate dev
-```
 
-## Running
+This command will create the necessary tables in your database based on the Prisma schema.
 
-```bash
+Running the Application
+
+To start the development server:
+
 npm run dev
-```
 
-## Helpful commands and remainders
+The application will be available at http://localhost:3000.
 
-- Always work on a branch, once you are in one you can work and commit all you want, the most important branch is named `main`:w
+Technologies Used
 
-```bash
-git checkout -b branch-name
-```
+Front-End
 
-- push to your branches origin, afterwards you can go to the project online and request a pull request (PR)
+	•	Next.js: React framework with server-side rendering.
+	•	React.js: JavaScript library for building user interfaces.
+	•	Tailwind CSS: Utility-first CSS framework for styling.
+	•	Shadcn/ui: Component library for React.js.
 
-```bash
-git push origin branch-name
-```
+Back-End
 
-- once a branch is merged and you will start another branch you can delete it locally with
+	•	Next.js: For server-side rendering and API routes.
+	•	OpenAI API: Utilizing ChatGPT-3.5-turbo for AI recommendations.
+	•	Auth.js: Authentication framework for handling OAuth and sessions.
+	•	Zod: JavaScript data validation library.
 
-```bash
-git branch -d branch-name
-```
+Database
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+	•	Prisma: Next-generation ORM for TypeScript and JavaScript.
+	•	PostgreSQL: Relational database for data storage.
 
-## Dependencies Directory
+Helpful Commands and Reminders
 
-- [Next.js Documentation](https://nextjs.org/docs) - Important for SSR and API
-- [Tailwindcss Documentation](https://tailwindcss.com/docs/flex-basis) - CSS
-- [Shadcn/ui Documentation](https://ui.shadcn.com/docs) - CSS component library, if you are making something functional like a button or a toast check if it exists in here
-- [Prisma Documentation](https://www.prisma.io/docs/orm/overview/introduction) - Data retrieval for API, data saving
-- [Auth.js Documentation](https://authjs.dev/getting-started) - Registers Session and manages authentication
+	•	Generate Auth Secret
+
+npx authjs generate-secret
+
+
+	•	Database Migration
+After any changes to the Prisma schema:
+
+npx prisma migrate dev
+
+License
+
+This project is licensed under the MIT License.
