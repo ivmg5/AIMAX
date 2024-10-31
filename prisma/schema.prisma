@@ -1,0 +1,256 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Stydy methods is missing
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  UserInterest    UserInterest[]
+  UserCareerPath  UserCareerPath[]
+  UserKnowledge   UserKnowledge[]
+  UserPreferences UserPreferences[]
+  Recommendation  Recommendation[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Recommendation {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+  subjectId String
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+}
+
+model Subject {
+  id          String @id @default(cuid())
+  name        String
+  description String
+
+  resources      StudyResource[]
+  Recommendation Recommendation[]
+}
+
+model StudyResource {
+  id          String       @id @default(cuid())
+  name        String
+  description String
+  url         String?
+  type        ResourceType
+
+  subjects  Subject[]
+  subjectId String?
+}
+
+enum ResourceType {
+  VIDEO
+  ARTICLE
+  COURSE
+  BOOK
+  PODCAST
+  OTHER
+}
+
+model Knowledge {
+  id   String @id @default(cuid())
+  name String
+
+  UserKnowledge UserKnowledge[]
+}
+
+model UserKnowledge {
+  userId      String
+  knowledgeId String
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  knowledge Knowledge @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+
+  @@id([userId, knowledgeId])
+}
+
+model Interest {
+  id   String @id @default(cuid())
+  name String
+
+  UserInterest UserInterest[]
+}
+
+model UserInterest {
+  userId     String
+  interestId String
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, interestId])
+}
+
+model CareerPath {
+  id   String @id @default(cuid())
+  name String
+
+  UserCareerPath UserCareerPath[]
+}
+
+model UserCareerPath {
+  userId       String
+  careerPathId String
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerPath CareerPath @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+
+  @@id([userId, careerPathId])
+}
+
+model UserPreferences {
+  id                String  @id @default(cuid())
+  userId            String
+  location          String
+  special_attention String?
+  time_goal         String
+
+  pronouns String?
+  identity String?
+
+  user                  User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  PreferencesMethod     PreferencesMethod[]
+  PreferencesLanguage   PreferencesLanguage[]
+  PreferencesImportance PreferencesImportance[]
+  PreferencesReason     PreferencesReason[]
+}
+
+model Language {
+  id                  String                @id @default(cuid())
+  name                String
+  PreferencesLanguage PreferencesLanguage[]
+}
+
+model PreferencesLanguage {
+  languageId    String
+  preferencesId String
+
+  language    Language        @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  preferences UserPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+
+  @@id([languageId, preferencesId])
+}
+
+model Importance {
+  id                    String                  @id @default(cuid())
+  name                  String
+  PreferencesImportance PreferencesImportance[]
+}
+
+model PreferencesImportance {
+  importanceId  String
+  preferencesId String
+
+  importance  Importance      @relation(fields: [importanceId], references: [id], onDelete: Cascade)
+  preferences UserPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+
+  @@id([importanceId, preferencesId])
+}
+
+model Reason {
+  id                String              @id @default(cuid())
+  name              String
+  PreferencesReason PreferencesReason[]
+}
+
+model PreferencesReason {
+  reasonId      String
+  preferencesId String
+
+  reason      Reason          @relation(fields: [reasonId], references: [id], onDelete: Cascade)
+  preferences UserPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+
+  @@id([reasonId, preferencesId])
+}
+
+model Method {
+  id                String              @id @default(cuid())
+  name              String
+  PreferencesMethod PreferencesMethod[]
+}
+
+model PreferencesMethod {
+  methodId      String
+  preferencesId String
+
+  method      Method          @relation(fields: [methodId], references: [id], onDelete: Cascade)
+  preferences UserPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+
+  @@id([methodId, preferencesId])
+}
